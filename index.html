@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="midnight">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>TEMPO // Aesthetic Study OS & Pomodoro</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍅</text></svg>">
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TEMPO">
+  <meta name="theme-color" content="#0a0b10">
+</head>
+<body>
+
+  <!-- Ambient Dynamic Canvas (Dust, Rain, Stars, Breathing Aura) -->
+  <canvas id="ambientCanvas"></canvas>
+
+  <div class="app-container">
+
+    <!-- Top Header Navigation -->
+    <header class="header-bar">
+      <div class="brand-section">
+        <div class="brand-logo">⏱️</div>
+        <div>
+          <span class="brand-title">TEMPO</span>
+          <span class="brand-badge">STUDY OS</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Theme Selector -->
+        <div class="theme-selector">
+          <select id="themeSelect" title="เลือกธีมภาพ">
+            <option value="midnight">🌌 Midnight Obsidian</option>
+            <option value="lofi">☕ Cozy Lofi Cafe</option>
+            <option value="cyber">⚡ Cyber Matrix</option>
+            <option value="nordic">❄️ Nordic Slate</option>
+            <option value="matcha">🍵 Matcha Zen</option>
+            <option value="sakura">🌸 Sakura Dusk</option>
+          </select>
+        </div>
+
+        <!-- Ambient Backdrop Selector -->
+        <div class="theme-selector">
+          <select id="visualModeSelect" title="บรรยากาศพื้นหลัง">
+            <option value="dust">✨ ละอองฝุ่นอุ่น (Dust)</option>
+            <option value="rain">🌧️ สายฝนริมหน้าต่าง (Rain)</option>
+            <option value="stars">🌌 ท้องฟ้าดวงดาว (Stars)</option>
+            <option value="breathing">🧘 วงแหวนลมหายใจ (Breath)</option>
+            <option value="none">⏹️ เรียบง่าย (Minimal)</option>
+          </select>
+        </div>
+
+        <!-- Clock Face Style Selector -->
+        <div class="theme-selector">
+          <select id="clockStyleSelect" title="รูปแบบหน้าปัดนาฬิกา">
+            <option value="dial">🔘 วงแหวนโมเดิร์น (Dial Ring)</option>
+            <option value="flip">📟 แผ่นพับเรโทร (Flip Clock)</option>
+            <option value="minimal">🔲 มินิมอลสวิส (Minimal Giant)</option>
+          </select>
+        </div>
+
+        <!-- Soundscape Mixer Trigger -->
+        <button id="btnSoundMixer" class="btn-icon" title="ห้องผสมเสียงธรรมชาติ (Ambient Sound Mixer)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+          </svg>
+          <span id="soundBadge" class="sound-badge">0</span>
+        </button>
+
+        <!-- Stats & Analytics Trigger -->
+        <button id="btnStats" class="btn-icon" title="สถิติการเรียนรู้ & กราฟ">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 20V10"></path>
+            <path d="M12 20V4"></path>
+            <path d="M6 20v-6"></path>
+          </svg>
+        </button>
+
+        <!-- Settings Modal Trigger -->
+        <button id="btnSettings" class="btn-icon" title="ตั้งค่าเวลา & เสียงเตือน">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+
+        <!-- Picture-in-Picture Floating Mini-Window Trigger -->
+        <button id="btnPip" class="btn-icon" title="หน้าต่างลอย Picture-in-Picture (Alt+P)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+            <rect x="12" y="9" width="8" height="6" rx="1" fill="currentColor"></rect>
+          </svg>
+        </button>
+
+        <!-- Fullscreen Zen Mode Trigger -->
+        <button id="btnZen" class="btn-icon" title="โหมดสมาธิเต็มจอ Zen Mode (Alt+F)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <main class="main-grid">
+
+      <!-- Center Focus Hero -->
+      <section class="hero-card">
+
+        <!-- Mode Switcher Tabs -->
+        <div class="mode-tabs">
+          <button class="mode-tab active" data-mode="pomodoro">🎯 โฟกัส (Focus)</button>
+          <button class="mode-tab" data-mode="shortBreak">☕ พักสั้น (Short Break)</button>
+          <button class="mode-tab" data-mode="longBreak">🛋️ พักยาว (Long Break)</button>
+          <button class="mode-tab" data-mode="flow">⏱️ ไร้ขีดจำกัด (Flow)</button>
+        </div>
+
+        <!-- Active Focus Task Banner -->
+        <div id="activeTaskBanner" class="active-task-banner">
+          <span class="task-label">กำลังทำ:</span>
+          <span id="activeTaskTitleText" class="task-title-text">ยังไม่ได้เลือกภารกิจเจาะจง</span>
+          <span id="activeTaskPomBadge" class="task-pom-count">0 🍅</span>
+        </div>
+
+        <!-- Central Circular Dial Display -->
+        <div class="timer-dial-wrapper">
+          <svg class="timer-svg" viewBox="0 0 320 320">
+            <defs>
+              <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="var(--accent-primary)" />
+                <stop offset="100%" stop-color="var(--accent-secondary)" />
+              </linearGradient>
+            </defs>
+            <circle class="timer-circle-bg" cx="160" cy="160" r="140"></circle>
+            <circle id="timerProgressCircle" class="timer-circle-progress" cx="160" cy="160" r="140"></circle>
+          </svg>
+
+          <div class="timer-inner-content">
+            <div id="timerDigits" class="timer-digits">25:00</div>
+            <div id="timerCycleStatus" class="timer-cycle-status">รอบที่ 1 / 4 • ลุยสมาธิ</div>
+          </div>
+        </div>
+
+        <!-- Main Timer Controls -->
+        <div class="timer-controls">
+          <button id="btnSkip" class="btn-secondary-action" title="ข้ามไปช่วงถัดไป (Alt+S)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+            <span>ข้าม</span>
+          </button>
+
+          <button id="btnPlayPause" class="btn-primary-action">
+            <svg id="playIcon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <svg id="pauseIcon" style="display:none;" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            <span id="btnPlayPauseText">เริ่มจับเวลา</span>
+          </button>
+
+          <button id="btnReset" class="btn-secondary-action" title="รีเซ็ตเวลารอบนี้ (Alt+R)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            <span>รีเซ็ต</span>
+          </button>
+        </div>
+
+        <!-- Quick 5-min Bump Button -->
+        <button id="btnAddFive" class="quick-bump-btn">+ ขยายเวลาอีก 5 นาที</button>
+
+        <!-- Mindful Break Coach Card (Visible during Break phases) -->
+        <div id="breakCoachCard" class="break-coach-card" style="display: none;">
+          <div class="break-coach-header">
+            <span class="break-coach-badge">🌱 กิจกรรมช่วงพักสายตา</span>
+            <button id="btnShuffleBreak" class="btn-shuffle-break" title="สุ่มกิจกรรมใหม่">🎲 สุ่มกิจกรรม</button>
+          </div>
+          <div id="breakCoachText" class="break-coach-text">
+            👀 กฎ 20-20-20: ละสายตาจากหน้าจอ มองออกไปไกล 20 ฟุต (6 เมตร) เป็นเวลา 20 วินาที เพื่อคลายกล้ามเนื้อตา
+          </div>
+        </div>
+
+        <!-- Motivational Quote -->
+        <div id="motivationQuote" class="motivation-bar">
+          "สมาธิที่ต่อเนื่องเพียง 25 นาที ทรงพลังกว่าการนั่งอ่านทั้งวันแบบใจลอย"
+        </div>
+
+      </section>
+
+      <!-- Right Sidebar Modules -->
+      <aside class="sidebar-panel">
+
+        <!-- Task & Objective Planner -->
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <div class="panel-title">
+              <span>📋</span> แผนการอ่าน & ภารกิจ
+            </div>
+            <div class="task-filters">
+              <span id="taskCountText" style="font-size: 11px; color: var(--text-dim);">0 ภารกิจ</span>
+            </div>
+          </div>
+
+          <form id="taskForm" class="task-input-row">
+            <input type="text" id="taskInput" class="task-input" placeholder="พิมพ์ชื่อเรื่องที่ต้องอ่าน/ทำ..." required>
+            <select id="taskEstSelect" class="task-est-select" title="ประเมินจำนวนมะเขือเทศ">
+              <option value="1">1 🍅 (25m)</option>
+              <option value="2">2 🍅 (50m)</option>
+              <option value="3">3 🍅 (75m)</option>
+              <option value="4">4 🍅 (100m)</option>
+              <option value="6">6 🍅</option>
+            </select>
+            <button type="submit" class="btn-add-task">+</button>
+          </form>
+
+          <div id="taskList" class="task-list">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Quick Brain Dump Notepad -->
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <div class="panel-title">
+              <span>💡</span> พักความคิด (Brain Dump)
+            </div>
+          </div>
+          <textarea id="brainDumpNote" class="notepad-textarea" placeholder="เรื่องที่แวบเข้ามาในหัว... จดไว้ตรงนี้ก่อน แล้วค่อยกลับมาจัดการหลังเรียนเสร็จ เพื่อไม่ให้หลุดโฟกัส!"></textarea>
+          <div class="notepad-hint">บันทึกอัตโนมัติ ไม่ต้องกังวลเรื่องลืม</div>
+        </div>
+
+        <!-- Focus Bonsai Living Companion -->
+        <div class="panel-card" style="padding: 14px 16px;">
+          <div id="bonsaiGardenWidget" class="bonsai-widget-container">
+            <!-- Rendered by BonsaiEngine -->
+          </div>
+        </div>
+
+        <!-- Daily Focus & Streak Card -->
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <div class="panel-title">
+              <span>🔥</span> สถิติวันนี้
+            </div>
+          </div>
+          <div class="streak-badge-card">
+            <div class="stat-item">
+              <span id="statTodayTime" class="stat-val">0m</span>
+              <span class="stat-label">เวลาโฟกัส</span>
+            </div>
+            <div class="stat-item">
+              <span id="statTodayPoms" class="stat-val">0</span>
+              <span class="stat-label">มะเขือเทศ 🍅</span>
+            </div>
+            <div class="stat-item">
+              <span id="statStreakDays" class="stat-val">1</span>
+              <span class="stat-label">สตรีควันต่อเนื่อง 🔥</span>
+            </div>
+          </div>
+
+          <!-- Daily Goal Habit Progress -->
+          <div class="daily-goal-box">
+            <div class="goal-header">
+              <span class="goal-label">เป้าหมายวันนี้: <strong id="goalText">0 / 4 🍅</strong></span>
+              <span id="goalPercentText" class="goal-percent">0%</span>
+            </div>
+            <div class="goal-bar-track">
+              <div id="goalBarFill" class="goal-bar-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+    </main>
+
+    <!-- Zen Mode Exit Button -->
+    <button id="btnExitZen" class="zen-exit-pill">กด Esc หรือคลิกตรงนี้เพื่อออกจากโหมด Zen</button>
+
+  </div>
+
+  <!-- Ambient Soundscapes Mixer Floating Drawer -->
+  <div id="ambientMixerDrawer" class="ambient-mixer-drawer">
+    <div class="mixer-header">
+      <div class="panel-title">
+        <span>🎧</span> Ambient Soundscapes
+      </div>
+      <button id="btnCloseMixer" class="modal-close-btn">&times;</button>
+    </div>
+
+    <!-- Quick Presets -->
+    <div class="preset-chips">
+      <button class="chip-btn" data-preset="lofi-beats">🎧 Lo-Fi Beats & Chords</button>
+      <button class="chip-btn" data-preset="rainy-cafe">🌧️ ร้านกาแฟฝนตก</button>
+      <button class="chip-btn" data-preset="night-cabin">🪵 กระท่อมผิงไฟ</button>
+      <button class="chip-btn" data-preset="deep-focus">🧠 คลื่นสมาธิ 40Hz</button>
+      <button class="chip-btn" data-preset="reset-sound">ปิดเสียงทั้งหมด</button>
+    </div>
+
+    <div class="soundscape-grid" style="margin-top: 14px;">
+      <!-- Vinyl Crackle -->
+      <div class="sound-track">
+        <div class="sound-info"><span>📻</span> แผ่นเสียงคลาสสิก</div>
+        <input type="range" class="sound-slider" data-sound="vinyl" min="0" max="1" step="0.05" value="0">
+      </div>
+      <!-- Lo-Fi Ambient Chords -->
+      <div class="sound-track">
+        <div class="sound-info"><span>🎹</span> เปียโนแจ๊ส Lo-Fi</div>
+        <input type="range" class="sound-slider" data-sound="lofiChords" min="0" max="1" step="0.05" value="0">
+      </div>
+      <!-- Rain -->
+      <div class="sound-track">
+        <div class="sound-info"><span>🌧️</span> สายฝนโปรยปราย</div>
+        <input type="range" class="sound-slider" data-sound="rain" min="0" max="1" step="0.05" value="0">
+      </div>
+      <!-- Campfire -->
+      <div class="sound-track">
+        <div class="sound-info"><span>🪵</span> ไม้เผากองไฟ</div>
+        <input type="range" class="sound-slider" data-sound="campfire" min="0" max="1" step="0.05" value="0">
+      </div>
+      <!-- Wind -->
+      <div class="sound-track">
+        <div class="sound-info"><span>🍃</span> ลมพัดยอดไม้</div>
+        <input type="range" class="sound-slider" data-sound="wind" min="0" max="1" step="0.05" value="0">
+      </div>
+      <!-- Waves -->
+      <div class="sound-track">
+        <div class="sound-info"><span>🌊</span> คลื่นกระทบฝั่ง</div>
+        <input type="range" class="sound-slider" data-sound="waves" min="0" max="1" step="0.05" value="0">
+      </div>
+      <!-- Binaural 40Hz Gamma Wave -->
+      <div class="sound-track">
+        <div class="sound-info"><span>🧠</span> คลื่น 40Hz โฟกัส</div>
+        <input type="range" class="sound-slider" data-sound="binaural" min="0" max="1" step="0.05" value="0">
+      </div>
+      <!-- Brown Noise -->
+      <div class="sound-track">
+        <div class="sound-info"><span>📻</span> Brown Noise ทุ้มลึก</div>
+        <input type="range" class="sound-slider" data-sound="brownNoise" min="0" max="1" step="0.05" value="0">
+      </div>
+      <!-- Cafe Murmur -->
+      <div class="sound-track">
+        <div class="sound-info"><span>☕</span> บรรยากาศคาเฟ่</div>
+        <input type="range" class="sound-slider" data-sound="cafe" min="0" max="1" step="0.05" value="0">
+      </div>
+    </div>
+
+    <!-- Master Volume -->
+    <div class="master-vol-row">
+      <span>ความดังหลัก (Master):</span>
+      <input type="range" id="masterVolumeSlider" class="sound-slider" min="0" max="1" step="0.05" value="0.7">
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">⚙️ ตั้งค่าระบบการเรียนรู้</div>
+        <button id="btnCloseSettings" class="modal-close-btn">&times;</button>
+      </div>
+
+      <div class="setting-group">
+        <span class="setting-label">กำหนดระยะเวลา (นาที):</span>
+        <div class="time-inputs-grid">
+          <div class="time-input-box">
+            <span>โฟกัส (Focus)</span>
+            <input type="number" id="inputPomDuration" class="setting-input" min="1" max="120" value="25">
+          </div>
+          <div class="time-input-box">
+            <span>พักสั้น (Short)</span>
+            <input type="number" id="inputShortDuration" class="setting-input" min="1" max="60" value="5">
+          </div>
+          <div class="time-input-box">
+            <span>พักยาว (Long)</span>
+            <input type="number" id="inputLongDuration" class="setting-input" min="1" max="90" value="15">
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <span class="setting-label">จำนวนรอบก่อนพักยาว:</span>
+        <input type="number" id="inputCycles" class="setting-input" min="1" max="12" value="4">
+      </div>
+
+      <div class="setting-group">
+        <span class="setting-label">เป้าหมายจำนวนมะเขือเทศต่อวัน (Daily Goal):</span>
+        <input type="number" id="inputDailyGoal" class="setting-input" min="1" max="24" value="4">
+      </div>
+
+      <div class="setting-group">
+        <span class="setting-label">เสียงระฆังเตือนเมื่อจบรอบ:</span>
+        <select id="selectChime" class="setting-input">
+          <option value="singing_bowl">🔔 ขันทิเบตผ่อนคลาย (Tibetan Singing Bowl - 528Hz)</option>
+          <option value="crystal_bell">✨ ระฆังคริสตัลใส (Crystal Bell)</option>
+          <option value="zen_gong">🧘 ฆ้องเซนกังวาน (Zen Gong)</option>
+          <option value="digital_soft">🎵 ดิจิทัลนุ่มนวล (Soft Chime)</option>
+        </select>
+        <button id="btnTestChime" class="quick-bump-btn" style="margin-top: 8px;">ทดลองฟังเสียงเตือน</button>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-toggle-row">
+          <span class="setting-toggle-label">เริ่มช่วงพักอัตโนมัติ (Auto-start Breaks)</span>
+          <label class="switch">
+            <input type="checkbox" id="toggleAutoBreaks">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-toggle-row">
+          <span class="setting-toggle-label">เริ่มช่วงโฟกัสอัตโนมัติ (Auto-start Pomodoros)</span>
+          <label class="switch">
+            <input type="checkbox" id="toggleAutoPoms">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-toggle-row">
+          <span class="setting-toggle-label">เสียงนาฬิกาเดินเบาๆ (Soft Ticking)</span>
+          <label class="switch">
+            <input type="checkbox" id="toggleTicking">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-toggle-row">
+          <span class="setting-toggle-label">เสียงระฆังเตือนผ่านครึ่งทาง (Halfway Milestone Chime)</span>
+          <label class="switch">
+            <input type="checkbox" id="toggleHalfwayChime" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-toggle-row">
+          <span class="setting-toggle-label">การแจ้งเตือนบนเดสก์ท็อป (Notifications)</span>
+          <button id="btnReqNotify" class="quick-bump-btn">เปิดการแจ้งเตือน</button>
+        </div>
+      </div>
+
+      <button id="btnSaveSettings" class="btn-primary-action" style="width: 100%; justify-content: center; margin-top: 10px;">
+        บันทึกการตั้งค่า
+      </button>
+    </div>
+  </div>
+
+  <!-- Analytics & Stats Modal -->
+  <div id="statsModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <div class="modal-title">📊 สถิติและความคืบหน้าการเรียน</div>
+        <button id="btnCloseStats" class="modal-close-btn">&times;</button>
+      </div>
+
+      <!-- Weekly Chart -->
+      <div class="setting-group">
+        <span class="setting-label">สถิติ 7 วันล่าสุด (นาที):</span>
+        <canvas id="weeklyChartCanvas"></canvas>
+      </div>
+
+      <!-- 10-Week Activity Heatmap -->
+      <div class="setting-group">
+        <span class="setting-label">ตารางความต่อเนื่อง 10 สัปดาห์ (Activity Heatmap):</span>
+        <div id="heatmapContainer" class="heatmap-container"></div>
+      </div>
+
+      <!-- Lifetime Stats -->
+      <div class="streak-badge-card" style="margin-bottom: 20px;">
+        <div class="stat-item">
+          <span id="allTimeHours" class="stat-val">0</span>
+          <span class="stat-label">ชั่วโมงโฟกัสรวม</span>
+        </div>
+        <div class="stat-item">
+          <span id="allTimeSessions" class="stat-val">0</span>
+          <span class="stat-label">รอบทั้งหมด</span>
+        </div>
+        <div class="stat-item">
+          <span id="allTimeStreak" class="stat-val">1</span>
+          <span class="stat-label">สตรีคสูงสุด 🔥</span>
+        </div>
+      </div>
+
+      <!-- Recent History List -->
+      <div class="setting-group">
+        <span class="setting-label">ประวัติการโฟกัสล่าสุด:</span>
+        <div id="sessionHistoryList" class="history-list">
+          <!-- Dynamically filled -->
+        </div>
+      </div>
+
+      <!-- Data Export / Clear -->
+      <div style="display: flex; gap: 10px; margin-top: 18px;">
+        <button id="btnExportData" class="btn-secondary-action" style="flex: 1; justify-content: center;">
+          💾 ส่งออกข้อมูล (JSON)
+        </button>
+        <button id="btnClearStats" class="btn-secondary-action" style="color: #f87171; border-color: rgba(239, 68, 68, 0.3);">
+          ล้างประวัติ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/sound-engine.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/tasks.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/ambient-visuals.js"></script>
+  <script src="js/pip-engine.js"></script>
+  <script src="js/bonsai-engine.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
